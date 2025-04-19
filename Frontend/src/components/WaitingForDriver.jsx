@@ -10,9 +10,10 @@ const WaitingforDriver = (props) => {
       <div  className='flex items-center justify-between'>
       <img className='h-12' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="" />
       <div className='text-right'>
-      <h2 className='text-lg font-medium capitalize'>Sarthak </h2>
-      <h4 className='text-xl font-semibold -mt-1 -mb-1'> MP 04 AB 2345  </h4>
+      <h2 className='text-lg font-medium capitalize'>{props.ride?.captain.fullname.firstname + " " + props.ride?.captain.fullname.lastname}</h2>
+      <h4 className='text-xl font-semibold -mt-1 -mb-1'> {props.ride?.captain.vehicle.plate}  </h4>
       <p className='text-sm text-gray-600'> Maruti 800</p>
+      <h1 className='text-lg font-semibold'>  {props.ride?.otp} </h1>
       </div>
       </div>
 
@@ -22,20 +23,20 @@ const WaitingforDriver = (props) => {
       <i className=" text-lg ri-map-pin-2-fill "></i>
       <div >
           <h3 className='text-lg font-medium'> 562/11/A</h3>
-          <p className='text-base -mt-1 text-gray-600'>Kakariya Talab A</p>
+          <p className='text-base -mt-1 text-gray-600'>{props.ride?.pickup}</p>
       </div>
       </div>
       <div className='flex itemss-center gap-5 p-3 border-b-2'>
       <i className="ri-map-pin-user-line"></i>
       <div >
           <h3 className='text-lg font-medium'> 562/11/A</h3>
-          <p className='text-base -mt-1 text-gray-600'>Kakariya Talab A</p>
+          <p className='text-base -mt-1 text-gray-600'>{props.ride?.destination}</p>
       </div>
       </div>
       <div className='flex itemss-center gap-5 p-3 border-b-2'>
       <i className="ri-wallet-2-line"></i>
       <div >
-          <h3 className='text-lg font-medium'> 193.02</h3>
+          <h3 className='text-lg font-medium'>₹{props.ride?.fare}</h3>
           <p className='text-base -mt-1 text-gray-600'> Select Payment Options</p>
       </div>
       </div>

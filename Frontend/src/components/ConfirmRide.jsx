@@ -14,21 +14,21 @@ const ConfirmRide = (props) => {
         <i className=" text-lg ri-map-pin-2-fill "></i>
         <div >
             <h3 className='text-lg font-medium'> 562/11/A</h3>
-            <p className='text-base -mt-1 text-gray-600'>Kakariya Talab A</p>
+            <p className='text-base -mt-1 text-gray-600'>{props.pickup}</p>
         </div>
         </div>
         <div className='flex itemss-center gap-5 p-3 border-b-2'>
         <i className="ri-map-pin-user-line"></i>
         <div >
             <h3 className='text-lg font-medium'> 562/11/A</h3>
-            <p className='text-base -mt-1 text-gray-600'>Kakariya Talab A</p>
+            <p className='text-base -mt-1 text-gray-600'>{props.destination}</p>
         </div>
         </div>
         <div className='flex itemss-center gap-5 p-3 border-b-2'>
         <i className="ri-wallet-2-line"></i>
         <div >
-            <h3 className='text-lg font-medium'> 193.02</h3>
-            <p className='text-base -mt-1 text-gray-600'> Select Payment Options</p>
+            <h3 className='text-lg font-medium'>{props.fare[props.vehicleType]}</h3>
+            <p className='text-base -mt-1 text-gray-600'> Cash Cash</p>
         </div>
         </div>
 
@@ -36,6 +36,7 @@ const ConfirmRide = (props) => {
        <button onClick={()=>{
         props.setVehicleFound(true)
         props.setConfirmRidePanel(false)
+        props.createRide()
        }} className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg'> Confirm </button>
        </div>
     </div>
