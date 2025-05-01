@@ -12,7 +12,7 @@ const WaitingforDriver = (props) => {
       <div className='text-right'>
       <h2 className='text-lg font-medium capitalize'>{props.ride?.captain.fullname.firstname + " " + props.ride?.captain.fullname.lastname}</h2>
       <h4 className='text-xl font-semibold -mt-1 -mb-1'> {props.ride?.captain.vehicle.plate}  </h4>
-      <p className='text-sm text-gray-600'> Maruti 800</p>
+      <p className='text-sm text-gray-600'> Maruti Suzuki Alto</p>
       <h1 className='text-lg font-semibold'>  {props.ride?.otp} </h1>
       </div>
       </div>
@@ -22,14 +22,14 @@ const WaitingforDriver = (props) => {
       <div className='flex itemss-center gap-5 p-3 border-b-2'>
       <i className=" text-lg ri-map-pin-2-fill "></i>
       <div >
-          <h3 className='text-lg font-medium'> 562/11/A</h3>
+          <h3 className='text-lg font-medium'> Pickup</h3>
           <p className='text-base -mt-1 text-gray-600'>{props.ride?.pickup}</p>
       </div>
       </div>
       <div className='flex itemss-center gap-5 p-3 border-b-2'>
       <i className="ri-map-pin-user-line"></i>
       <div >
-          <h3 className='text-lg font-medium'> 562/11/A</h3>
+          <h3 className='text-lg font-medium'> Destination</h3>
           <p className='text-base -mt-1 text-gray-600'>{props.ride?.destination}</p>
       </div>
       </div>
@@ -37,10 +37,9 @@ const WaitingforDriver = (props) => {
       <i className="ri-wallet-2-line"></i>
       <div >
           <h3 className='text-lg font-medium'>₹{props.ride?.fare}</h3>
-          <p className='text-base -mt-1 text-gray-600'> Select Payment Options</p>
+          <p className='text-base -mt-1 text-gray-600'> Cash Cash</p>
       </div>
       </div>
-
      </div>
      </div>
   </div>

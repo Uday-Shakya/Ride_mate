@@ -17,7 +17,7 @@ const CaptainHome = () => {
   const [ confirmRidePopupPanel, setConfirmRidePopupPanel ] = useState(false)
   const ridePopupPanelRef = useRef(null)
   const confirmRidePopupPanelRef = useRef(null)
-  const {ride, setRide} = useState(null)
+  const [ride, setRide ]= useState(null)
 
 
   const { socket } = useContext(SocketContext)
@@ -111,14 +111,14 @@ async function confirmRide() {
     <div className='h-2/5 p-6'>
      < CaptainDetails/>
     </div>
-    <div ref={ridePopupPanelRef} className='fixed z-10 w-full bg-white bottom-0 translate-y-full bg-white p-3 py-10 pt-14'> 
+    <div ref={ridePopupPanelRef} className='fixed z-10 w-full bottom-0 translate-y-full bg-white px-3 py-10 pt-12'> 
       <RidePopUp 
       ride={ride}
       setRidePopupPanel={setRidePopupPanel}
       setConfirmRidePopupPanel={setConfirmRidePopupPanel}
       confirmRide={confirmRide} />
       </div>
-      <div ref={confirmRidePopupPanelRef} className='fixed z-10 w-full h-screen bg-white bottom-0 translate-y-full bg-white p-3 py-10 pt-14'> 
+      <div ref={confirmRidePopupPanelRef} className='fixed z-10 w-full h-screen bottom-0 translate-y-full bg-white px-3 py-10 pt-14'> 
       <ConfirmRidePopUp 
       ride={ride}
       setConfirmRidePopupPanel={setConfirmRidePopupPanel} setRidePopupPanel={setRidePopupPanel} />

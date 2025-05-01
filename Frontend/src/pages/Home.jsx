@@ -12,7 +12,8 @@ import { SocketContext } from "../context/SocketContext";
 import { useContext, useEffect } from "react";
 import { UserDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import LiveTracking from '../components/LiveTracking';
+import LiveTracking from "../components/LiveTracking";
+import RideMate_Logo from '../assets/RideMate_Logo.png'
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -33,7 +34,7 @@ const Home = () => {
   const [activeField, setActiveField] = useState(null);
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
-  const [ ride, setRide ] = useState(null)
+  const [ride, setRide] = useState(null);
 
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserDataContext);
@@ -42,28 +43,25 @@ const Home = () => {
 
   useEffect(() => {
     socket.emit("join", { userType: "user", userId: user._id });
-  }, [user]);
+  }, [user])
 
-  socket.on('ride-confirmed', ride => {
+  socket.on("ride-confirmed", (ride) => {
+    console.log("ride confirmed", ride);
+    setVehicleFound(false);
+    setWaitingForDriver(true);
+    setRide(ride);
+  })
 
-
-    setVehicleFound(false)
-    setWaitingForDriver(true)
-    setRide(ride)
-})
-
-socket.on('ride-started', ride => {
-  console.log("ride")
-  setWaitingForDriver(false)
-  navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
-})
-
+  socket.on("ride-started", (ride) => {
+    console.log("ride");
+    setWaitingForDriver(false);
+    navigate("/riding", { state: { ride } }); // Updated navigate to include ride data
+  });
 
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
         {
           params: { input: e.target.value },
           headers: {
@@ -80,8 +78,7 @@ socket.on('ride-started', ride => {
   const handleDestinationChange = async (e) => {
     setDestination(e.target.value);
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
         {
           params: { input: e.target.value },
           headers: {
@@ -96,7 +93,7 @@ socket.on('ride-started', ride => {
   };
 
   const submitHandler = (e) => {
-    e.preventDefault();
+    e.preventDefault()
   };
   useGSAP(
     function () {
@@ -183,8 +180,7 @@ socket.on('ride-started', ride => {
     setVehiclePanel(true);
     setPanelOpen(false);
 
-    const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
       {
         params: { pickup, destination },
         headers: {
@@ -210,27 +206,23 @@ socket.on('ride-started', ride => {
         },
       }
     );
+    
   }
 
   return (
     <div className="h-screen relative overflow-hidden">
       <img
         className="w-16 absolute left-5 top-5"
-        src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+        src={RideMate_Logo}
         alt=""
       />
 
-      <div
-        onClick={() => {
-          setVehiclePanel(false);
-        }}
-        className="h-screen w-screen"
-      >
+      <div className="h-screen w-screen">
         {/*Image for TEMPorary*/}
         <LiveTracking />
       </div>
       <div className="flex flex-col justify-end h-screen absolute top-0 w-full ">
-        <div className="h-[30%] p-6 bg-white ">
+        <div className="h-[30%] p-6 bg-white relative">
           <h5
             ref={panelCloseRef}
             onClick={() => {
@@ -251,24 +243,22 @@ socket.on('ride-started', ride => {
 
             <input
               onClick={() => {
-                setPanelOpen(true);
+                setPanelOpen(true)
+                setActiveField("pickup");
               }}
               value={pickup}
-              onChange={(e) => {
-                setPickup(e.target.value);
-              }}
-              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-5"
+              onChange={handlePickupChange}
+              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full "
               type="text"
               placeholder="Enter Pickup Location"
             />
             <input
               onClick={() => {
-                setPanelOpen(true);
+                setPanelOpen(true)
+                setActiveField("destination");
               }}
               value={destination}
-              onChange={(e) => {
-                setDestination(e.target.value);
-              }}
+              onChange={handleDestinationChange}
               className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-3"
               type="text"
               placeholder="Enter Drop Location"
@@ -281,7 +271,7 @@ socket.on('ride-started', ride => {
             Find Trip
           </button>
         </div>
-        <div ref={panelRef} className="h-[70%] p-6 bg-white p-5 h-0">
+        <div ref={panelRef} className=" bg-white h-0">
           <LocationSearchPanel
             suggestions={
               activeField === "pickup"
@@ -298,7 +288,7 @@ socket.on('ride-started', ride => {
       </div>
       <div
         ref={vehiclePanelRef}
-        className="fixed z-10 w-full bg-white bottom-0 translate-y-full bg-white p-3 py-10 pt-14"
+        className="fixed z-10 w-full bg-white bottom-0 translate-y-full px-3 py-10 pt-12"
       >
         <VehiclePanel
           selectVehicle={setVehicleType}
@@ -309,7 +299,7 @@ socket.on('ride-started', ride => {
       </div>
       <div
         ref={confirmRidePanelRef}
-        className="fixed z-10 w-full bg-white bottom-0 translate-y-full bg-white p-3 py-6 pt-12"
+        className="fixed z-10 w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
       >
         <ConfirmRide
           createRide={createRide}
@@ -323,7 +313,7 @@ socket.on('ride-started', ride => {
       </div>
       <div
         ref={vehicleFoundRef}
-        className="fixed z-10 w-full bg-white bottom-0 translate-y-full bg-white p-3 py-6 pt-12"
+        className="fixed z-10 w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
       >
         <LookingForDriver
           createRide={createRide}
@@ -336,13 +326,14 @@ socket.on('ride-started', ride => {
       </div>
       <div
         ref={waitingForDriverRef}
-        className="fixed z-10 w-full bg-white bottom-0 translate-y-full bg-white p-3 py-6 pt-12"
+        className="fixed z-10 w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
       >
-        <WaitingforDriver 
-                    ride={ride}
-                    setVehicleFound={setVehicleFound}
-                    setWaitingForDriver={setWaitingForDriver}
-                    waitingForDriver={waitingForDriver} />
+        <WaitingforDriver
+          ride={ride}
+          setVehicleFound={setVehicleFound}
+          setWaitingForDriver={setWaitingForDriver}
+          waitingForDriver={waitingForDriver}
+        />
       </div>
     </div>
   );
