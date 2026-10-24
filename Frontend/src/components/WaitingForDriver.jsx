@@ -3,42 +3,49 @@ import React from 'react'
 const WaitingforDriver = (props) => {
   return (
     <div>
-    <h5 className='p-1 text-center w-[93%] absolute top-0 ' onClick={()=>{
-      props.waitingForDriver(false)
-    }}><i className=" text-3xl text-gray-200 ri-arrow-down-double-line"></i></h5>
+    <h5 className='p-1 text-center w-[93%] absolute top-0 cursor-pointer' onClick={()=>{
+      if (typeof props.waitingForDriver === 'function') {
+        props.waitingForDriver(false)
+      } else if (typeof props.setWaitingForDriver === 'function') {
+        props.setWaitingForDriver(false)
+      }
+    }}><i className="text-3xl dm-text-muted ri-arrow-down-double-line"></i></h5>
     
-      <div  className='flex items-center justify-between'>
-      <img className='h-12' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="" />
+      <div className='flex items-center justify-between'>
+      <img className='h-12 object-contain' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="Vehicle" />
       <div className='text-right'>
-      <h2 className='text-lg font-medium capitalize'>{props.ride?.captain.fullname.firstname + " " + props.ride?.captain.fullname.lastname}</h2>
-      <h4 className='text-xl font-semibold -mt-1 -mb-1'> {props.ride?.captain.vehicle.plate}  </h4>
-      <p className='text-sm text-gray-600'> Maruti Suzuki Alto</p>
-      <h1 className='text-lg font-semibold'>  {props.ride?.otp} </h1>
+      <h2 className='text-lg font-bold capitalize dm-text-primary'>{props.ride?.captain?.fullname ? `${props.ride.captain.fullname.firstname || ''} ${props.ride.captain.fullname.lastname || ''}`.trim() : 'Captain'}</h2>
+      <h4 className='text-xl font-extrabold -mt-1 -mb-1 dm-text-primary tracking-wider'>{props.ride?.captain?.vehicle?.plate || 'DL 01 AB 1234'}</h4>
+      <p className='text-sm dm-text-muted'>{props.ride?.captain?.vehicle?.color || ''} {props.ride?.captain?.vehicle?.vehicleType || 'Vehicle'}</p>
+      {props.ride?.otp && (
+        <span className='inline-block mt-1 px-3 py-0.5 bg-violet-600 text-white font-mono font-bold text-sm rounded-md'>OTP: {props.ride.otp}</span>
+      )}
       </div>
       </div>
 
      <div className='flex gap-2 justify-between flex-col items-center'>
-     <div className='w-full mt-5'>
-      <div className='flex itemss-center gap-5 p-3 border-b-2'>
-      <i className=" text-lg ri-map-pin-2-fill "></i>
-      <div >
-          <h3 className='text-lg font-medium'> Pickup</h3>
-          <p className='text-base -mt-1 text-gray-600'>{props.ride?.pickup}</p>
+     <div className='w-full mt-5 dm-bg-card rounded-2xl border dm-border p-2'>
+      <div className='flex items-center gap-4 p-3 border-b dm-border'>
+        <i className="text-lg ri-map-pin-2-fill text-rose-500"></i>
+        <div>
+            <h3 className='text-xs uppercase font-bold dm-text-muted'>Pickup</h3>
+            <p className='text-sm font-medium dm-text-primary'>{props.ride?.pickup}</p>
+        </div>
       </div>
+      <div className='flex items-center gap-4 p-3 border-b dm-border'>
+        <i className="text-lg ri-map-pin-user-line text-emerald-500"></i>
+        <div>
+            <h3 className='text-xs uppercase font-bold dm-text-muted'>Destination</h3>
+            <p className='text-sm font-medium dm-text-primary'>{props.ride?.destination}</p>
+        </div>
       </div>
-      <div className='flex itemss-center gap-5 p-3 border-b-2'>
-      <i className="ri-map-pin-user-line"></i>
-      <div >
-          <h3 className='text-lg font-medium'> Destination</h3>
-          <p className='text-base -mt-1 text-gray-600'>{props.ride?.destination}</p>
-      </div>
-      </div>
-      <div className='flex itemss-center gap-5 p-3 border-b-2'>
-      <i className="ri-wallet-2-line"></i>
-      <div >
-          <h3 className='text-lg font-medium'>₹{props.ride?.fare}</h3>
-          <p className='text-base -mt-1 text-gray-600'> Cash Cash</p>
-      </div>
+      <div className='flex items-center gap-4 p-3'>
+        <i className="text-lg ri-wallet-2-line text-amber-500"></i>
+        <div>
+            <h3 className='text-xs uppercase font-bold dm-text-muted'>Fare</h3>
+            <p className='text-xl font-bold dm-text-primary'>₹{props.ride?.fare}</p>
+            <p className='text-xs dm-text-muted'>Cash / UPI</p>
+        </div>
       </div>
      </div>
      </div>

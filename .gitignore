@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-.env 
-node_modules
-=======
-node_modules
 .env
->>>>>>> c5c0595 (Captain Routes Complete)
+node_modules
+.log
+.txt

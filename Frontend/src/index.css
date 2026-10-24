@@ -1,3 +1,252 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   DARK MODE via CSS Custom Properties
+   Applied by adding 'dark' class to <html> element
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* Light mode tokens */
+  --bg-page: #ffffff;
+  --bg-page-secondary: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-secondary: #f3f4f6;
+  --bg-input: #eeeeee;
+  --bg-muted: #f9fafb;
+
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --text-placeholder: #9ca3af;
+
+  --border-color: #e5e7eb;
+  --border-input: #d1d5db;
+
+  --btn-primary-bg: #111111;
+  --btn-primary-text: #ffffff;
+  --btn-captain-bg: #10b461;
+  --btn-user-bg: #d5622d;
+
+  --panel-bg: #ffffff;
+  --modal-bg: #ffffff;
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --card-bg: #f9fafb;
+  --tag-bg: #fef3c7;
+  --tag-text: #92400e;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  /* Dark mode tokens */
+  --bg-page: #030712;
+  --bg-page-secondary: #111827;
+  --bg-surface: #111827;
+  --bg-surface-secondary: #1f2937;
+  --bg-input: #1f2937;
+  --bg-muted: #1f2937;
+
+  --text-primary: #f9fafb;
+  --text-secondary: #e5e7eb;
+  --text-muted: #9ca3af;
+  --text-placeholder: #6b7280;
+
+  --border-color: #374151;
+  --border-input: #4b5563;
+
+  --btn-primary-bg: #7c3aed;
+  --btn-primary-text: #ffffff;
+  --btn-captain-bg: #059669;
+  --btn-user-bg: #ea580c;
+
+  --panel-bg: #111827;
+  --modal-bg: #111827;
+  --overlay: rgba(0, 0, 0, 0.75);
+
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --card-bg: #1f2937;
+  --tag-bg: #451a03;
+  --tag-text: #fcd34d;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* Smooth transition for all color changes */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+}
+
+/* Override for animations that shouldn't transition color */
+[class*="animate-"],
+.gsap-animated {
+  transition: none;
+}
+
+/* ============================================================
+   UTILITY CLASSES using CSS variables
+   ============================================================ */
+
+/* Page backgrounds */
+.dm-bg-page    { background-color: var(--bg-page); }
+.dm-bg-surface { background-color: var(--bg-surface); }
+.dm-bg-surface-2 { background-color: var(--bg-surface-secondary); }
+.dm-bg-input   { background-color: var(--bg-input); }
+.dm-bg-card    { background-color: var(--card-bg); }
+.dm-bg-muted   { background-color: var(--bg-muted); }
+
+/* Text */
+.dm-text-primary   { color: var(--text-primary); }
+.dm-text-secondary { color: var(--text-secondary); }
+.dm-text-muted     { color: var(--text-muted); }
+
+/* Borders */
+.dm-border { border-color: var(--border-color); }
+.dm-border-input { border-color: var(--border-input); }
+
+/* Buttons */
+.dm-btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+.dm-btn-captain {
+  background-color: var(--btn-captain-bg);
+  color: #ffffff;
+}
+.dm-btn-user {
+  background-color: var(--btn-user-bg);
+  color: #ffffff;
+}
+
+/* Panel overlay */
+.dm-panel {
+  background-color: var(--panel-bg);
+  color: var(--text-primary);
+}
+.dm-modal {
+  background-color: var(--modal-bg);
+  color: var(--text-primary);
+}
+
+/* Input field */
+.dm-input {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border-color: var(--border-input);
+}
+.dm-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+/* Toggle backdrop pill */
+.dm-toggle-pill {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+html.dark .dm-toggle-pill {
+  background-color: rgba(17, 24, 39, 0.9);
+}
+
+/* Error alert */
+.dm-error {
+  background-color: #fef2f2;
+  border-color: #f87171;
+  color: #dc2626;
+}
+html.dark .dm-error {
+  background-color: #450a0a;
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+/* Logout button */
+.dm-icon-btn {
+  background-color: #ffffff;
+  color: #1f2937;
+}
+html.dark .dm-icon-btn {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+/* Tag */
+.dm-tag-cash {
+  background-color: var(--tag-bg);
+  color: var(--tag-text);
+}
+
+/* Payment modal UPI section */
+.dm-payment-inner {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+/* Payment modal UPI ID row */
+.dm-payment-upi-row {
+  background-color: var(--bg-surface);
+  border-color: var(--border-color);
+}
+
+/* ============================================================
+   AUTOMATIC DARK MODE OVERRIDES FOR SUB-COMPONENTS
+   Ensures that panels & components look cohesive in dark mode
+   without breaking existing Tailwind utility styling
+   ============================================================ */
+
+html.dark .bg-white {
+  background-color: var(--bg-surface) !important;
+}
+
+html.dark .bg-slate-50,
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark .bg-\[\#eee\] {
+  background-color: var(--card-bg) !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700 {
+  color: var(--text-primary) !important;
+}
+
+html.dark .text-gray-600,
+html.dark .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+html.dark .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+html.dark .border-b-2,
+html.dark .border-gray-50,
+html.dark .border-gray-100,
+html.dark .border-gray-200 {
+  border-color: var(--border-color) !important;
+}
+
+html.dark input.bg-\[\#eee\],
+html.dark input.bg-gray-100 {
+  background-color: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-input) !important;
+}
+
+html.dark .shadow-md,
+html.dark .shadow-lg,
+html.dark .shadow-2xl {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6);
+}
