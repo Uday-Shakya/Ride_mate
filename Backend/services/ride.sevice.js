@@ -1,4 +1,6 @@
 const rideModel = require('../models/ride.model');
+const captainModel = require('../models/captain.model');
+const mongoose = require('mongoose');
 const mapService = require('./maps.service');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
@@ -156,3 +158,69 @@ module.exports.endRide = async ({ rideId, captain }) => {
 
     return ride;
 }
+
+module.exports.rateCaptain = async ({ rideId, rating, feedback, userId }) => {
+    if (!rideId || !rating) {
+        throw new Error('Ride ID and rating are required');
+    }
+
+    const numericRating = Number(rating);
+    if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
+        throw new Error('Rating must be between 1 and 5');
+    }
+
+    const ride = await rideModel.findOne({
+        _id: rideId,
+        user: userId
+    }).populate('captain');
+
+    if (!ride) {
+        throw new Error('Ride not found or unauthorized');
+    }
+
+    if (!ride.captain) {
+        throw new Error('No captain assigned to this ride');
+    }
+
+    // Update ride rating and feedback
+    ride.rating = numericRating;
+    ride.feedback = feedback ? String(feedback).trim() : '';
+    ride.ratedAt = new Date();
+    await ride.save();
+
+    const captainId = ride.captain._id ? ride.captain._id : ride.captain;
+
+    // Recalculate captain average rating and total ratings via aggregation
+    const stats = await rideModel.aggregate([
+        {
+            $match: {
+                captain: new mongoose.Types.ObjectId(captainId),
+                rating: { $exists: true, $ne: null }
+            }
+        },
+        {
+            $group: {
+                _id: '$captain',
+                avgRating: { $avg: '$rating' },
+                totalRatings: { $sum: 1 }
+            }
+        }
+    ]);
+
+    const avgRating = stats.length > 0 ? parseFloat(stats[0].avgRating.toFixed(1)) : numericRating;
+    const totalRatings = stats.length > 0 ? stats[0].totalRatings : 1;
+
+    const updatedCaptain = await captainModel.findByIdAndUpdate(
+        captainId,
+        {
+            rating: avgRating,
+            totalRatings: totalRatings
+        },
+        { new: true }
+    );
+
+    return {
+        ride,
+        captain: updatedCaptain
+    };
+};

@@ -36,6 +36,20 @@ router.post('/create',
         rideController.endRide
     )
 
+    router.post('/rate-captain',
+        authMiddleware.authUser,
+        body('rideId').isMongoId().withMessage('Invalid ride id'),
+        body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
+        body('feedback').optional().isString().withMessage('Feedback must be a string'),
+        rideController.rateCaptain
+    )
 
+    router.post('/rate',
+        authMiddleware.authUser,
+        body('rideId').isMongoId().withMessage('Invalid ride id'),
+        body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
+        body('feedback').optional().isString().withMessage('Feedback must be a string'),
+        rideController.rateCaptain
+    )
 
 module.exports = router;

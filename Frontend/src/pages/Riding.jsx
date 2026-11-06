@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { SocketContext } from '../context/SocketContext'
 import LiveTracking from '../components/LiveTracking'
 import DarkModeToggle from '../components/DarkModeToggle'
+import RateCaptainModal from '../components/RateCaptainModal'
 
 const Riding = () => {
   const location = useLocation()
@@ -10,20 +11,31 @@ const Riding = () => {
   const { socket } = useContext(SocketContext)
   const navigate = useNavigate()
 
+  const [currentRide, setCurrentRide] = useState(ride)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [showRatingModal, setShowRatingModal] = useState(false)
+  const [isRideEnded, setIsRideEnded] = useState(false)
+  const [hasRated, setHasRated] = useState(Boolean(ride?.rating))
   const [selectedMethod, setSelectedMethod] = useState('upi') // 'upi' or 'cash'
 
-  const fareAmount = ride?.fare || 0
-  const captainName = ride?.captain?.fullname?.firstname || 'Captain'
-  const captainUpiId = ride?.captain?.email ? `${ride.captain.email.split('@')[0]}@ridemate` : 'captain.ride@upi'
+  const fareAmount = currentRide?.fare || 0
+  const captain = currentRide?.captain
+  const captainName = captain?.fullname?.firstname || 'Captain'
+  const captainRating = captain?.rating ? Number(captain.rating).toFixed(1) : '5.0'
+  const captainTotalRatings = captain?.totalRatings || 0
+  const captainUpiId = captain?.email ? `${captain.email.split('@')[0]}@ridemate` : 'captain.ride@upi'
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=${encodeURIComponent(
     `upi://pay?pa=${captainUpiId}&pn=RideMate&am=${fareAmount}&cu=INR`
   )}`
 
   useEffect(() => {
-    const handleRideEnded = () => {
-      console.log('[Riding] Ride ended event received, redirecting home');
-      navigate('/home');
+    const handleRideEnded = (data) => {
+      console.log('[Riding] Ride ended event received, opening rating modal', data);
+      if (data && data._id) {
+        setCurrentRide(data);
+      }
+      setIsRideEnded(true);
+      setShowRatingModal(true);
     };
 
     socket.on('ride-ended', handleRideEnded);
@@ -31,7 +43,21 @@ const Riding = () => {
     return () => {
       socket.off('ride-ended', handleRideEnded);
     };
-  }, [socket, navigate]);
+  }, [socket]);
+
+  const handleRatingModalClose = () => {
+    setShowRatingModal(false);
+    if (isRideEnded) {
+      navigate('/home');
+    }
+  };
+
+  const handleRatedSuccess = (rateResult) => {
+    setHasRated(true);
+    if (rateResult?.ride) {
+      setCurrentRide(rateResult.ride);
+    }
+  };
 
   return (
     <div className='h-screen relative overflow-hidden dm-bg-page'>
@@ -54,9 +80,16 @@ const Riding = () => {
           <div className='flex items-center justify-between pb-4 border-b dm-border'>
             <img className='h-14 object-contain' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="Vehicle" />
             <div className='text-right'>
-              <h2 className='text-lg font-bold dm-text-primary capitalize'>{captainName} {ride?.captain?.fullname?.lastname || ''}</h2>
-              <h4 className='text-xl font-extrabold dm-text-primary tracking-wider'>{ride?.captain?.vehicle?.plate || 'DL 01 AB 1234'}</h4>
-              <p className='text-xs dm-text-muted capitalize'>{ride?.captain?.vehicle?.color || 'White'} {ride?.captain?.vehicle?.vehicleType || 'Vehicle'}</p>
+              <h2 className='text-lg font-bold dm-text-primary capitalize'>{captainName} {captain?.fullname?.lastname || ''}</h2>
+              <div className='flex items-center justify-end gap-1.5 mt-0.5'>
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 dark:text-amber-400 text-xs font-bold border border-amber-500/20'>
+                  <i className="ri-star-fill text-amber-400 text-xs"></i>
+                  <span>{captainRating}</span>
+                  <span className='opacity-70 text-[10px]'>({captainTotalRatings} reviews)</span>
+                </span>
+              </div>
+              <h4 className='text-lg font-extrabold dm-text-primary tracking-wider mt-0.5'>{captain?.vehicle?.plate || 'DL 01 AB 1234'}</h4>
+              <p className='text-xs dm-text-muted capitalize'>{captain?.vehicle?.color || 'White'} {captain?.vehicle?.vehicleType || 'Vehicle'}</p>
             </div>
           </div>
 
@@ -67,7 +100,7 @@ const Riding = () => {
               </div>
               <div className='flex-1 overflow-hidden'>
                 <h3 className='text-xs font-bold dm-text-muted uppercase tracking-wider'>Destination</h3>
-                <p className='text-sm font-semibold dm-text-primary truncate'>{ride?.destination || 'Destination'}</p>
+                <p className='text-sm font-semibold dm-text-primary truncate'>{currentRide?.destination || 'Destination'}</p>
               </div>
             </div>
 
@@ -86,14 +119,47 @@ const Riding = () => {
           </div>
         </div>
 
-        <button 
-          onClick={() => setShowPaymentModal(true)}
-          className='w-full py-4 bg-green-600 hover:bg-green-700 active:scale-[0.99] text-white font-bold text-base rounded-2xl shadow-lg shadow-green-600/30 flex items-center justify-center gap-2 transition-all'
-        >
-          <i className="ri-secure-payment-line text-xl"></i>
-          Make a Payment (₹{fareAmount})
-        </button>
+        {isRideEnded ? (
+          <div className='w-full space-y-2 mt-4'>
+            <div className='p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center'>
+              <p className='text-xs font-bold text-emerald-500 uppercase tracking-wider'>Ride Completed</p>
+              <p className='text-sm font-semibold dm-text-primary'>Thank you for travelling with us!</p>
+            </div>
+            <button
+              onClick={() => setShowRatingModal(true)}
+              className='w-full py-4 bg-amber-500 hover:bg-amber-600 active:scale-[0.99] text-gray-950 font-extrabold text-base rounded-2xl shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all'
+            >
+              <i className="ri-star-smile-fill text-xl"></i>
+              {hasRated ? 'Update Captain Rating' : `Rate Captain ${captainName}`}
+            </button>
+          </div>
+        ) : (
+          <div className='w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4'>
+            <button 
+              onClick={() => setShowPaymentModal(true)}
+              className='w-full py-3.5 bg-green-600 hover:bg-green-700 active:scale-[0.99] text-white font-bold text-sm rounded-2xl shadow-lg shadow-green-600/30 flex items-center justify-center gap-2 transition-all'
+            >
+              <i className="ri-secure-payment-line text-lg"></i>
+              Pay Fare (₹{fareAmount})
+            </button>
+            <button
+              onClick={() => setShowRatingModal(true)}
+              className='w-full py-3.5 dm-bg-card hover:opacity-90 active:scale-[0.99] dm-text-primary font-bold text-sm rounded-2xl border dm-border flex items-center justify-center gap-2 transition-all'
+            >
+              <i className="ri-star-smile-line text-lg text-amber-400"></i>
+              {hasRated ? 'Rated ★' : 'Rate Captain'}
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Rate Captain Modal */}
+      <RateCaptainModal
+        ride={currentRide}
+        isOpen={showRatingModal}
+        onClose={handleRatingModalClose}
+        onRated={handleRatedSuccess}
+      />
 
       {/* Passenger Payment Modal Bottom Sheet */}
       {showPaymentModal && (

@@ -2,6 +2,7 @@ const captainModel = require('../models/captain.model');
 const captainService = require('../services/captain.service');
 const {validationResult} = require('express-validator');
 const blackListTokenModel = require('../models/blacklistToken.model');
+const rideModel = require('../models/ride.model');
 
 module.exports.registerCaptain = async (req, res, next) => {
 
@@ -69,4 +70,26 @@ module.exports.logoutCaptain = async (req, res, next) => {
     await blackListTokenModel.create({ token });
     res.clearCookie('token');
     res.status(200).json({ message: 'Logged out successfully' });
+}
+
+module.exports.getCaptainRatings = async (req, res, next) => {
+    try {
+        const reviews = await rideModel.find({
+            captain: req.captain._id,
+            rating: { $exists: true, $ne: null }
+        })
+        .populate('user', 'fullname')
+        .select('rating feedback ratedAt pickup destination fare')
+        .sort({ ratedAt: -1 })
+        .limit(20);
+
+        return res.status(200).json({
+            rating: req.captain.rating || 5,
+            totalRatings: req.captain.totalRatings || 0,
+            reviews
+        });
+    } catch (err) {
+        console.error('Error fetching captain ratings:', err);
+        return res.status(500).json({ message: err.message });
+    }
 }

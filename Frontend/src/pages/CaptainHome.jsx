@@ -21,7 +21,8 @@ const CaptainHome = () => {
   const [ ride, setRide ] = useState(null)
 
   const { socket } = useContext(SocketContext)
-  const { captain } = useContext(CaptainDataContext)
+  const { captain, setCaptain } = useContext(CaptainDataContext)
+  const [ ratingNotification, setRatingNotification ] = useState(null)
 
   // Socket join & location tracking
   useEffect(() => {
@@ -76,10 +77,26 @@ const CaptainHome = () => {
 
     socket.on('new-ride', handleNewRide);
 
+    const handleRatingReceived = (data) => {
+      console.log('[CaptainHome] Rating received:', data);
+      if (setCaptain && data?.captainRating !== undefined) {
+        setCaptain(prev => prev ? ({
+          ...prev,
+          rating: data.captainRating,
+          totalRatings: data.totalRatings
+        }) : prev);
+      }
+      setRatingNotification(data);
+      setTimeout(() => setRatingNotification(null), 5000);
+    };
+
+    socket.on('rating-received', handleRatingReceived);
+
     return () => {
       socket.off('new-ride', handleNewRide);
+      socket.off('rating-received', handleRatingReceived);
     };
-  }, [socket]);
+  }, [socket, setCaptain]);
 
   async function confirmRide() {
     try {
@@ -125,6 +142,20 @@ const CaptainHome = () => {
 
   return (
     <div className='h-screen dm-bg-page overflow-hidden relative'>
+      {/* Real-time Rating Notification Toast */}
+      {ratingNotification && (
+        <div className='fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-gray-950 font-bold px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-amber-300 animate-bounce'>
+          <i className="ri-star-smile-fill text-2xl"></i>
+          <div>
+            <p className='text-[11px] uppercase tracking-wider font-black'>Passenger Feedback</p>
+            <p className='text-sm font-extrabold'>You received a {ratingNotification.rating} ★ rating!</p>
+            {ratingNotification.feedback && (
+              <p className='text-xs opacity-90 font-medium truncate max-w-xs'>"{ratingNotification.feedback}"</p>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className='fixed p-6 top-0 flex items-center justify-between w-screen z-10 pointer-events-none'>
         <img className='w-16 pointer-events-auto' src={RideMate_Logo} alt='RideMate'/>
         <div className='flex items-center gap-3 pointer-events-auto'>

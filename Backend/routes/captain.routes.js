@@ -25,6 +25,7 @@ router.post('/login', [
  captainController.loginCaptain
 )
 router.get('/profile', authMiddleware.authCaptain,captainController.getCaptainProfile);
+router.get('/ratings', authMiddleware.authCaptain, captainController.getCaptainRatings);
 
 router.get('/logout', authMiddleware.authCaptain,captainController.logoutCaptain);
 

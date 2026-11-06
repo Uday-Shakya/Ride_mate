@@ -148,3 +148,49 @@ module.exports.endRide = async (req, res) => {
         return res.status(500).json({ message: err.message });
     }
 }
+
+module.exports.rateCaptain = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { rideId, rating, feedback } = req.body;
+
+    try {
+        const result = await rideService.rateCaptain({
+            rideId,
+            rating: Number(rating),
+            feedback,
+            userId: req.user._id
+        });
+
+        // Notify captain in real-time via socket if captain is connected
+        if (result.captain && result.captain.socketId) {
+            sendMessageToSocketId(result.captain.socketId, {
+                event: 'rating-received',
+                data: {
+                    rideId: result.ride._id,
+                    rating: Number(rating),
+                    feedback: feedback || '',
+                    captainRating: result.captain.rating,
+                    totalRatings: result.captain.totalRatings
+                }
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Captain rated successfully',
+            ride: result.ride,
+            captain: {
+                _id: result.captain._id,
+                fullname: result.captain.fullname,
+                rating: result.captain.rating,
+                totalRatings: result.captain.totalRatings
+            }
+        });
+    } catch (err) {
+        console.error('Error rating captain:', err);
+        return res.status(500).json({ message: err.message });
+    }
+}

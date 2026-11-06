@@ -62,6 +62,16 @@ const captainSchema = new mongoose.Schema({
         lng : {
             type: Number,
         }
+    },
+    rating: {
+        type: Number,
+        default: 5.0,
+        min: 0,
+        max: 5,
+    },
+    totalRatings: {
+        type: Number,
+        default: 0,
     }
 })
 
