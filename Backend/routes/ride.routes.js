@@ -52,4 +52,14 @@ router.post('/create',
         rideController.rateCaptain
     )
 
+    router.get('/latest-unrated',
+        authMiddleware.authUser,
+        rideController.getLatestUnratedRide
+    )
+
+    router.get('/user-rides',
+        authMiddleware.authUser,
+        rideController.getUserRides
+    )
+
 module.exports = router;

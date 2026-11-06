@@ -75,20 +75,29 @@ const Riding = () => {
         <LiveTracking/>
       </div>
 
-      <div className='h-1/2 p-5 flex flex-col justify-between dm-panel rounded-t-3xl shadow-2xl relative z-10 -mt-6 border-t dm-border'>
+      <div className='h-1/2 p-5 flex flex-col justify-between overflow-y-auto dm-panel rounded-t-3xl shadow-2xl relative z-10 -mt-6 border-t dm-border'>
         <div>
           <div className='flex items-center justify-between pb-4 border-b dm-border'>
             <img className='h-14 object-contain' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="Vehicle" />
             <div className='text-right'>
               <h2 className='text-lg font-bold dm-text-primary capitalize'>{captainName} {captain?.fullname?.lastname || ''}</h2>
-              <div className='flex items-center justify-end gap-1.5 mt-0.5'>
-                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 dark:text-amber-400 text-xs font-bold border border-amber-500/20'>
+              <div className='flex items-center justify-end gap-1.5 mt-1'>
+                <span className='inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 dark:text-amber-400 text-xs font-bold border border-amber-500/20'>
                   <i className="ri-star-fill text-amber-400 text-xs"></i>
                   <span>{captainRating}</span>
-                  <span className='opacity-70 text-[10px]'>({captainTotalRatings} reviews)</span>
+                  <span className='opacity-70 text-[10px]'>({captainTotalRatings})</span>
                 </span>
+                <button
+                  type="button"
+                  onClick={() => setShowRatingModal(true)}
+                  className='inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500 hover:bg-amber-600 active:scale-95 text-gray-950 text-xs font-black shadow-sm transition-all'
+                  title="Rate Captain"
+                >
+                  <i className="ri-star-smile-fill text-xs"></i>
+                  <span>{hasRated ? 'Edit Rating' : 'Rate Captain'}</span>
+                </button>
               </div>
-              <h4 className='text-lg font-extrabold dm-text-primary tracking-wider mt-0.5'>{captain?.vehicle?.plate || 'DL 01 AB 1234'}</h4>
+              <h4 className='text-lg font-extrabold dm-text-primary tracking-wider mt-1'>{captain?.vehicle?.plate || 'DL 01 AB 1234'}</h4>
               <p className='text-xs dm-text-muted capitalize'>{captain?.vehicle?.color || 'White'} {captain?.vehicle?.vehicleType || 'Vehicle'}</p>
             </div>
           </div>

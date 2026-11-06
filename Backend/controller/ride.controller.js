@@ -194,3 +194,40 @@ module.exports.rateCaptain = async (req, res) => {
         return res.status(500).json({ message: err.message });
     }
 }
+
+module.exports.getLatestUnratedRide = async (req, res) => {
+    try {
+        const ride = await rideModel.findOne({
+            user: req.user._id,
+            captain: { $exists: true, $ne: null },
+            $or: [
+                { rating: { $exists: false } },
+                { rating: null }
+            ]
+        })
+        .sort({ _id: -1 })
+        .populate('captain');
+
+        return res.status(200).json(ride);
+    } catch (err) {
+        console.error('Error getting latest unrated ride:', err);
+        return res.status(500).json({ message: err.message });
+    }
+}
+
+module.exports.getUserRides = async (req, res) => {
+    try {
+        const rides = await rideModel.find({
+            user: req.user._id,
+            captain: { $exists: true, $ne: null }
+        })
+        .sort({ _id: -1 })
+        .limit(10)
+        .populate('captain');
+
+        return res.status(200).json(rides);
+    } catch (err) {
+        console.error('Error getting user rides:', err);
+        return res.status(500).json({ message: err.message });
+    }
+}
