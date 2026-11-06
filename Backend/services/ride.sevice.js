@@ -153,7 +153,8 @@ module.exports.endRide = async ({ rideId, captain }) => {
     await rideModel.findOneAndUpdate({
         _id: rideId
     }, {
-        status: 'completed'
+        status: 'completed',
+        completedAt: new Date()
     })
 
     return ride;

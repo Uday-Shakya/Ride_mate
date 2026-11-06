@@ -72,6 +72,10 @@ const captainSchema = new mongoose.Schema({
     totalRatings: {
         type: Number,
         default: 0,
+    },
+    profilePicture: {
+        type: String,
+        default: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
     }
 })
 

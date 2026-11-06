@@ -65,5 +65,8 @@ const rideSchema = new mongoose.Schema({
     ratedAt: {
         type: Date,
     },
-})
+    completedAt: {
+        type: Date,
+    },
+}, { timestamps: true })
 module.exports = mongoose.model('ride', rideSchema);

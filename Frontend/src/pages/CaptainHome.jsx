@@ -170,7 +170,7 @@ const CaptainHome = () => {
       <div className='h-1/2'>
         <LiveTracking/>
       </div>
-      <div className='h-2/5 p-6 dm-panel shadow-2xl relative z-10'>
+      <div className='h-1/2 p-5 dm-panel shadow-2xl relative z-10 overflow-y-auto'>
         <CaptainDetails/>
       </div>
       <div ref={ridePopupPanelRef} className='fixed z-20 w-full bottom-0 translate-y-full dm-panel px-3 py-10 pt-12 shadow-2xl'> 
